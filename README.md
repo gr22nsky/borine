@@ -1,248 +1,115 @@
-# 🌾 BORINE
+# 🌾 BORINE 공통 마스터 문서
 
-### 보리네 앱 마스터 기획서 – Expo + React Native 기반
+BORINE은 Expo + React Native 기반의 멀티 앱 모노레포입니다. 각 앱은 `apps/` 아래에 두고, 공통 UI/유틸/스토리지/훅은 `packages/`에서 재사용합니다.
 
-### (VSCode Copilot / GPT 최적화 버전)
+## 1) 앱 목록
 
----
+- `apps/alimi` → 보리네 알리미 (메인)
+- `apps/battery` → 보리네 배터리 (준비 중)
+- `apps/malhaejwo` → 보리네 말해줘 (준비 중)
+- `apps/memo` → 보리네 메모 (준비 중)
 
-## 1. 보리네 프로젝트 개요
+## 2) 모노레포 구조
 
-보리네(Borine)는 시니어를 위한 초간단 생활 도우미 앱 시리즈이다.
-
-핵심 철학은 다음 세 가지이다.
-
-1. 누구든지 쓸 수 있을 만큼 단순할 것
-2. 앱 하나는 기능 하나만 수행할 것
-3. 모든 보리네 앱은 UI/UX 패턴이 완전히 통일될 것
-
-즉, 사용자는 어느 보리네 앱이든 동일한 구조 안에서 쉽게 사용할 수 있게 된다.
-
----
-
-## 2. 기술 스택 (보리네 전체 공통)
-
-* Expo + React Native
-* TypeScript
-* React Navigation
-* AsyncStorage
-* 필요 시 Expo 모듈 추가
-* UI는 React Native 기본 컴포넌트 중심
-
----
-
-## 3. 공통 폴더 구조 (VSCode Copilot 최적화)
-
-모든 보리네 앱은 동일 폴더 구조를 사용한다.
-
+```
 borine/
- ├ apps/
- │   ├ medication/
- │   ├ alarm/
- │   └ memo/
- ├ packages/
- │   ├ ui/
- │   ├ hooks/
- │   ├ storage/
- │   └ utils/
- └ package.json (workspace root)
+  apps/
+    alimi/
+    battery/
+    malhaejwo/
+    memo/
+  packages/
+    ui/           # 공통 UI 컴포넌트/테마 토큰
+    hooks/        # 공통 React Hooks
+    storage/      # AsyncStorage 래퍼/키 관리
+    utils/        # 날짜/문자열/공통 로직 유틸
+  android/        # (레거시) 루트 단일 네이티브 프로젝트
+  docs/           # 스토어/정책 문서
+  img/            # 공용 이미지(로고 등)
+  screenshot/     # 스토어 등록용 캡처
+  scripts/        # 빌드 자동화 스크립트
+```
 
----
+## 3) 공통 디자인 토큰
 
-## 4. UI/UX 공통 규칙
+- primary: `#C2723A`
+- background: `#F5EDE3`
 
-### 글자 크기
+폰트:
+- 기본 폰트: `Cafe24Ssurround`
 
-* 제목(H1): 28~32px
-* 섹션 제목(H2): 22~24px
-* 본문: 18~20px
-* 버튼 텍스트: 최소 20px
+## 4) 공통 컴포넌트(`packages/ui`)
 
-### 버튼 규칙
+문서/코드에서 아래 이름을 동일하게 사용합니다.
 
-* 터치 영역 최소 48px
-* 주요 버튼(저장/확인)은 화면 하단에 크게 배치
-* 취소 버튼은 텍스트 형태로 제공
+- `colors` (테마 컬러 토큰)
+- `baseFont` (기본 폰트)
+- `Screen` (SafeArea + body/footer 레이아웃)
+- `Card`
+- `Button` (`primary`/`ghost`/`danger`)
+- `TextField`
+- `SectionTitle`
 
-### 색상 규칙
+## 5) 개발 실행
 
-* Primary 색상: #2C6EFD
-* 텍스트: #1B1B1B
-* 배경: #FFFFFF
-* Error: 고대비 빨간색
+루트에서:
 
-### 네비게이션
+- 설치: `npm install`
 
-* 기본적으로 2개 이상의 스크린으로 구성
-* HomeScreen → ManageScreen 구조
-* 헤더는 큰 글씨
-* 뒤로 가기 버튼 항상 제공
+보리네 알리미:
 
----
+- 개발 서버: `npm run alimi:start`
+- 안드로이드 실행(Expo): `npm run alimi:android`
 
-## 5. 데이터 저장 규칙 (AsyncStorage)
+## 6) Android 빌드(앱별 APK/AAB)
 
-### 키 네이밍 규칙
+### 왜 `cd android; gradlew ...`가 애매한가?
 
-BORINE_`<APPNAME>`_`<ENTITY>`
+Gradle(`android/`)로 `assembleRelease`/`bundleRelease`를 실행하면 **그 시점에 존재하는 네이티브 프로젝트 1개만** 빌드됩니다.
 
-예시:
+반면 개발 실행(`npm run alimi:start`)은 워크스페이스 단위로 JS 번들/개발서버를 띄우는 개념이라, “앱이 여러 개”인 모노레포와는 결이 다릅니다.
 
-* BORINE_MEDICATION_LIST
-* BORINE_MEDICATION_HISTORY
-* BORINE_MEMO_LIST
+그래서 BORINE에서는 **앱별로 prebuild → 그 앱의 Gradle로 빌드**를 자동화합니다.
 
-### 날짜 규칙
+### 권장: 앱별 자동 빌드 스크립트
 
-* 항상 YYYY-MM-DD 문자열 사용
+루트에서 실행:
 
-### ID 규칙
+- APK(로컬 설치/테스트용): `npm run alimi:apk`
+- AAB(Play Store 업로드용): `npm run alimi:aab`
 
-* 모든 데이터 엔티티는 uuid를 사용
+이 스크립트는 **2단계**로 동작합니다.
 
----
+1) `expo prebuild` (앱 폴더 기준으로 `apps/<app>/android` 생성)
+2) `gradlew assembleRelease` 또는 `gradlew bundleRelease` 실행
 
-## 6. 보리네 시리즈 1번 앱: 보리네 약먹기 도우미
+결과물:
 
-보리네 앱들의 최초 버전이자 핵심 앱이다.
+- APK: `apps/alimi/android/app/build/outputs/apk/release/app-release.apk`
+- AAB: `apps/alimi/android/app/build/outputs/bundle/release/app-release.aab`
+- 추가 보관(추천): `dist/android/alimi/` 아래로 자동 복사됩니다.
 
-목표는 다음 두 문장을 해결하는 것이다.
+## 7) 에뮬레이터/기기 설치·삭제(ADB)
 
-“오늘 약 먹었는지 기억이 안 난다.”
+### 연결된 디바이스 확인
 
-“약이 많아서 헷갈린다.”
+`adb devices`
 
----
+여러 대가 보이면 특정 디바이스를 지정합니다.
 
-## 6.1 기능 목록 (MVP)
+- 1회 명령에만 지정: `adb -s emulator-5554 <command>`
+- PowerShell에서 고정: `$env:ANDROID_SERIAL="emulator-5554"`
 
-1. 오늘 날짜 표시
-2. 오늘 복약해야 할 약 리스트
-3. ○ → ● 로 복약 체크
-4. 약 등록/삭제
-5. 날짜별 히스토리 조회
+### 릴리즈 APK 설치/삭제(보리네 알리미)
 
----
+패키지명(현재): `boinre.alimi`
 
-## 6.2 데이터 모델
+- 설치: `adb install -r apps/alimi/android/app/build/outputs/apk/release/app-release.apk`
+- 삭제: `adb uninstall boinre.alimi`
+- 데이터 초기화(설정/기록 등 초기화): `adb shell pm clear boinre.alimi`
+- 실행: `adb shell am start -n boinre.alimi/.MainActivity`
 
-Medication
+## 8) 스토어/정책 문서
 
-* id
-* name
-* times(아침/점심/저녁 boolean)
-
-DailyIntake
-
-* date(YYYY-MM-DD)
-* taken { medicationId : { morning, noon, evening } }
-
----
-
-## 6.3 저장 구조
-
-* BORINE_MEDICATION_LIST : Medication[]
-* BORINE_MEDICATION_HISTORY : DailyIntake[]
-
----
-
-## 6.4 Hook 구조
-
-useMedications
-
-* medications
-* addMedication
-* removeMedication
-
-useHistory
-
-* todayIntake
-* toggleIntake
-* getIntakeByDate
-
----
-
-## 6.5 화면 명세
-
-### HomeScreen
-
-* 오늘 날짜
-* “오늘 드셔야 할 약: n개”
-* 아침/점심/저녁 카드
-* ○/● 토글
-* 아래 버튼 2개: 기록 보기, 약 관리
-
-### MedicationListScreen
-
-* 약 리스트
-* 휴지통 아이콘 터치 → 삭제
-* “약 추가하기” 버튼
-
-### AddMedicationScreen
-
-* 약 이름 입력
-* 아침/점심/저녁 체크박스
-* “저장하기” 버튼
-
-### HistoryScreen
-
-* 달력 또는 날짜 리스트
-* 해당 날짜 복약 여부 표시
-
----
-
-## 7. 개발 로드맵
-
-1. Expo 프로젝트 생성
-2. Navigation 설치
-3. 폴더 구조 생성
-4. Storage 유틸 작성
-5. Hooks 작성
-6. HomeScreen 개발
-7. 기타 화면 개발
-8. 최종 Navigation 연결
-
----
-
-## 8. Copilot 최적화 규칙 요약
-
-* 모든 화면은 src/screens에 위치
-* 모든 로직은 src/hooks
-* 모든 저장은 src/storage
-* 모든 타입은 screens/types.ts
-* 날짜는 YYYY-MM-DD
-* 네이밍은 camelCase
-* UI는 단순·고대비·큰 글씨
-
----
-
-## 9. 보리네 전체 시리즈 확장 계획
-
-* 보리네 약먹기 도우미
-* 보리네 알람
-* 보리네 메모
-* 등
-
-모든 앱이 동일한 구조와 규칙을 사용하여
-
-개발 속도는 빨라지고
-
-사용자 경험은 통일된다.
-
----
-
-## 10. 시작하기 (현재 구축된 상태)
-
-1. 의존성 설치: `npm install`
-2. 약먹기 앱 실행: `npm run medication:start` (웹은 `npm run medication:web`)
-3. 폴더 구조: `apps/medication`에 Expo 앱, `packages/*`에 공용 모듈
-4. 네비게이션: React Navigation 네이티브 스택 적용, 기본 화면 4개(Home/약 리스트/약 추가/기록)
-5. 데이터: AsyncStorage에 `BORINE_MEDICATION_LIST`, `BORINE_MEDICATION_HISTORY` 키로 저장
-6. 자산: `apps/medication/assets`에 아이콘/스플래시 기본 색상(Primary #2C6EFD) 적용
-
-## 11. 품질/빌드 도구
-
-* Lint: `npm run lint` (ESLint flat config)
-* 포맷: `npm run format` (Prettier)
-* 타입 체크: `npm run typecheck --workspace apps/medication`
-* EAS: `apps/medication/eas.json` 프로파일(development/preview/production) 작성, 아이콘/스플래시는 `apps/medication/assets` 내 기본 파일 교체
+- 개인정보처리방침: `docs/privacy-policy.md`
+- 스토어 등록 문구: `docs/store-listing.md`

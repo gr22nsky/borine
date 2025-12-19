@@ -1,0 +1,8 @@
+{
+  "android": {
+    "package": "boinre.alimi"
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-5720633830102347~8559837598"
+  }
+}

@@ -39,5 +39,5 @@ export const getWeekdayIndex = (dateKey: string) => {
   return new Date(y, m - 1, d).getDay(); // 0=Sun
 };
 
-export const countScheduledDoses = (medication: { times: Record<string, boolean> }) =>
-  ['morning', 'noon', 'evening'].filter((t) => medication.times?.[t]).length;
+export const countScheduledSlots = (task: { times: Record<string, boolean> }) =>
+  ['morning', 'noon', 'evening'].filter((t) => task.times?.[t]).length;

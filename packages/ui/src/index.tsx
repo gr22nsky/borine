@@ -4,12 +4,14 @@ import {
   Modal,
   Platform,
   Pressable,
+  StyleProp,
   StyleSheet,
   Text,
   TextInput,
   ToastAndroid,
   View
 } from 'react-native';
+import type { TextStyle, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const colors = {
@@ -22,13 +24,15 @@ export const colors = {
   danger: '#B3261E'
 };
 
+export const baseFont = 'Cafe24Ssurround';
+
 type ScreenProps = {
   children: ReactNode;
   footer?: ReactNode;
 };
 
 export const Screen = ({ children, footer }: ScreenProps) => (
-  <SafeAreaView style={uiStyles.screen}>
+  <SafeAreaView style={uiStyles.screen} edges={['left', 'right', 'bottom']}>
     <View style={uiStyles.body}>{children}</View>
     {footer ? <View style={uiStyles.footer}>{footer}</View> : null}
   </SafeAreaView>
@@ -45,16 +49,19 @@ type ButtonProps = {
   onPress: () => void;
   variant?: 'primary' | 'ghost' | 'danger';
   disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 };
 
-export const Button = ({ label, onPress, variant = 'primary', disabled }: ButtonProps) => {
+export const Button = ({ label, onPress, variant = 'primary', disabled, style, textStyle }: ButtonProps) => {
   const variantStyle =
     variant === 'primary'
       ? uiStyles.buttonPrimary
       : variant === 'danger'
       ? uiStyles.buttonDanger
       : uiStyles.buttonGhost;
-  const textStyle =
+
+  const variantTextStyle =
     variant === 'primary'
       ? uiStyles.buttonPrimaryText
       : variant === 'danger'
@@ -67,13 +74,14 @@ export const Button = ({ label, onPress, variant = 'primary', disabled }: Button
       style={({ pressed }) => [
         uiStyles.buttonBase,
         variantStyle,
+        style,
         pressed && !disabled ? uiStyles.buttonPressed : null,
         disabled ? uiStyles.buttonDisabled : null
       ]}
       onPress={onPress}
       disabled={disabled}
     >
-      <Text style={[uiStyles.buttonText, textStyle]}>{label}</Text>
+      <Text style={[uiStyles.buttonText, variantTextStyle, textStyle]}>{label}</Text>
     </Pressable>
   );
 };
@@ -107,23 +115,47 @@ export const TextField = ({
   />
 );
 
-export const SectionTitle = ({ children }: { children: ReactNode }) => (
-  <Text style={uiStyles.sectionTitle}>{children}</Text>
+export const SectionTitle = ({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) => (
+  <Text style={[uiStyles.sectionTitle, style]}>{children}</Text>
 );
 
-export const SubText = ({ children }: { children: ReactNode }) => (
-  <Text style={uiStyles.subText}>{children}</Text>
+export const SubText = ({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) => (
+  <Text style={[uiStyles.subText, style]}>{children}</Text>
 );
 
-export const Row = ({ children, spaceBetween }: { children: ReactNode; spaceBetween?: boolean }) => (
-  <View style={[uiStyles.row, spaceBetween ? uiStyles.rowBetween : null]}>{children}</View>
-);
+export const Row = ({
+  children,
+  spaceBetween,
+  style
+}: {
+  children: ReactNode;
+  spaceBetween?: boolean;
+  style?: StyleProp<ViewStyle>;
+}) => <View style={[uiStyles.row, spaceBetween ? uiStyles.rowBetween : null, style]}>{children}</View>;
 
-export const Pill = ({ label, active }: { label: string; active?: boolean }) => (
-  <View style={[uiStyles.pill, active ? uiStyles.pillActive : null]}>
-    <Text style={[uiStyles.pillText, active ? uiStyles.pillTextActive : null]}>{label}</Text>
-  </View>
-);
+type ChipProps = {
+  label: string;
+  active?: boolean;
+  onPress?: () => void;
+  style?: StyleProp<ViewStyle>;
+};
+
+export const Chip = ({ label, active, onPress, style }: ChipProps) => {
+  const base = [uiStyles.chip, active ? uiStyles.chipActive : null, style];
+  const text = [uiStyles.chipText, active ? uiStyles.chipTextActive : null];
+  if (!onPress) {
+    return (
+      <View style={base}>
+        <Text style={text}>{label}</Text>
+      </View>
+    );
+  }
+  return (
+    <Pressable accessibilityRole="button" onPress={onPress} style={base}>
+      <Text style={text}>{label}</Text>
+    </Pressable>
+  );
+};
 
 type CheckboxProps = {
   label: string;
@@ -135,10 +167,7 @@ export const Checkbox = ({ label, checked, onChange }: CheckboxProps) => (
   <Pressable
     accessibilityRole="checkbox"
     onPress={() => onChange(!checked)}
-    style={({ pressed }) => [
-      uiStyles.checkbox,
-      pressed ? uiStyles.checkboxPressed : null
-    ]}
+    style={({ pressed }) => [uiStyles.checkbox, pressed ? uiStyles.checkboxPressed : null]}
   >
     <View style={[uiStyles.checkboxBox, checked ? uiStyles.checkboxBoxChecked : null]}>
       {checked ? <Text style={uiStyles.checkboxMark}>✓</Text> : null}
@@ -186,8 +215,8 @@ const uiStyles = StyleSheet.create({
   body: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 16,
-    gap: 12
+    paddingTop: 8,
+    gap: 10
   },
   footer: {
     paddingHorizontal: 20,
@@ -224,7 +253,8 @@ const uiStyles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 18,
-    fontWeight: '600'
+    fontWeight: '600',
+    fontFamily: baseFont
   },
   buttonPrimaryText: {
     color: '#fff'
@@ -249,16 +279,19 @@ const uiStyles = StyleSheet.create({
     paddingVertical: 14,
     fontSize: 18,
     color: colors.text,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    fontFamily: baseFont
   },
   sectionTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: colors.text
+    color: colors.text,
+    fontFamily: baseFont
   },
   subText: {
     fontSize: 16,
-    color: colors.muted
+    color: colors.muted,
+    fontFamily: baseFont
   },
   row: {
     flexDirection: 'row',
@@ -268,23 +301,30 @@ const uiStyles = StyleSheet.create({
   rowBetween: {
     justifyContent: 'space-between'
   },
-  pill: {
-    paddingHorizontal: 14,
+  chip: {
+    minHeight: 44,
+    width: '100%',
+    paddingHorizontal: 10,
     paddingVertical: 8,
-    borderRadius: 999,
+    borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-  pillActive: {
+  chipActive: {
     borderColor: colors.primary,
     backgroundColor: '#EAF1FF'
   },
-  pillText: {
-    fontSize: 16,
-    color: colors.text
+  chipText: {
+    fontSize: 14,
+    color: colors.text,
+    fontFamily: baseFont,
+    textAlign: 'center',
+    lineHeight: 18
   },
-  pillTextActive: {
+  chipTextActive: {
     color: colors.primary,
     fontWeight: '700'
   },
@@ -316,7 +356,8 @@ const uiStyles = StyleSheet.create({
   },
   checkboxLabel: {
     fontSize: 18,
-    color: colors.text
+    color: colors.text,
+    fontFamily: baseFont
   },
   modalOverlay: {
     flex: 1,
@@ -333,7 +374,8 @@ const uiStyles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: colors.text
+    color: colors.text,
+    fontFamily: baseFont
   },
   modalBody: {
     gap: 8
