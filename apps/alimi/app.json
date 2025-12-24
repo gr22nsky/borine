@@ -2,7 +2,7 @@
   "expo": {
     "name": "보리네 알리미",
     "slug": "borine-alimi",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/borine.png",
     "userInterfaceStyle": "light",
@@ -17,6 +17,7 @@
     },
     "android": {
       "package": "boinre.alimi",
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/borine.png",
         "backgroundColor": "#F5EDE3"
@@ -27,11 +28,17 @@
     "web": {
       "favicon": "./assets/borine.png"
     },
-    "react-native-google-mobile-ads": {
-      "android_app_id": "ca-app-pub-5720633830102347~8559837598"
-    },
     "plugins": [
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-5720633830102347~8559837598"
+        }
+      ],
       "./plugins/with-alimi-android-gradle.js"
     ]
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-5720633830102347~8559837598"
   }
 }

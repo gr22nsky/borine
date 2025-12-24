@@ -69,7 +69,7 @@ export const HomeScreen = ({ navigation }: Props) => {
 
   return (
     <Screen footer={footer}>
-      <Row spaceBetween style={styles.headerRow}>
+      <Row style={styles.headerRow}>
         <Text style={styles.dateText}>{todayKey}</Text>
         <SubText style={styles.weekdayText}>{`${weekdayLabel}요일`}</SubText>
       </Row>
@@ -132,7 +132,9 @@ const styles = StyleSheet.create({
   weekdayText: {
     fontSize: 18,
     fontWeight: '700',
-    color: colors.text
+    color: colors.text,
+    marginLeft: 8,
+    marginBottom: 4
   },
   name: {
     fontSize: 20,
