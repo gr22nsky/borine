@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "보리네 돋보기",
+    "slug": "borine-magnifier",
+    "version": "1.0.0",
+    "scheme": "borinemagnifier",
+    "orientation": "portrait",
+    "icon": "./assets/borine.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/borine.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F5EDE3"
+    },
+    "android": {
+      "package": "boinre.magnifier",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/borine.png",
+        "backgroundColor": "#F5EDE3"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.FLASHLIGHT"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "돋보기를 사용하기 위해 카메라 권한이 필요합니다.",
+          "microphonePermission": "마이크 권한은 사용하지 않습니다."
+        }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-5720633830102347~1442375846"
+        }
+      ],
+      "./plugins/with-magnifier-android-gradle.js"
+    ]
+  }
+}

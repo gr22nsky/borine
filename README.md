@@ -4,10 +4,9 @@ BORINE은 Expo + React Native 기반의 멀티 앱 모노레포입니다. 각 �
 
 ## 1) 앱 목록
 
-- `apps/alimi` → 보리네 알리미 (메인)
-- `apps/battery` → 보리네 배터리 (준비 중)
-- `apps/malhaejwo` → 보리네 말해줘 (준비 중)
-- `apps/memo` → 보리네 메모 (준비 중)
+- `apps/alimi` → 보리네 알리미 (완료)
+- `apps/malhaejwo` → 보리네 말해줘 (완료)
+- `apps/magnifier` → 보리네 돋보기 (진행 중)
 
 ## 2) 모노레포 구조
 
@@ -15,9 +14,8 @@ BORINE은 Expo + React Native 기반의 멀티 앱 모노레포입니다. 각 �
 borine/
   apps/
     alimi/
-    battery/
     malhaejwo/
-    memo/
+    magnifier/
   packages/
     ui/           # 공통 UI 컴포넌트/테마 토큰
     hooks/        # 공통 React Hooks
@@ -36,6 +34,7 @@ borine/
 - background: `#F5EDE3`
 
 폰트:
+
 - 기본 폰트: `Cafe24Ssurround`
 
 ## 4) 공통 컴포넌트(`packages/ui`)

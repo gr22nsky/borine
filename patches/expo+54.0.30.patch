@@ -1,0 +1,13 @@
+diff --git a/node_modules/expo/android/build.gradle b/node_modules/expo/android/build.gradle
+index 69c72d8..5887c91 100644
+--- a/node_modules/expo/android/build.gradle
++++ b/node_modules/expo/android/build.gradle
+@@ -7,7 +7,7 @@ import expo.modules.plugin.Version
+ // TODO(@lukmccall): Remove when we drop support for SDK 52
+ def useLegacyAutolinking = false
+ try {
+-  apply plugin: "expo-autolinking"
++  // apply plugin: "expo-autolinking"
+ } catch (e) {
+   useLegacyAutolinking = true
+ }
